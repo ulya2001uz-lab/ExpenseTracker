@@ -100,6 +100,6 @@ void ShowByCategory(List<Expense> expenses)
     }
     foreach (var pairs in allCategories)
     {
-        Console.WriteLine(pairs.Key + " : " + pairs.Value);
+        Console.WriteLine(pairs.Key + " : " + pairs.Value); 
     }
 }
