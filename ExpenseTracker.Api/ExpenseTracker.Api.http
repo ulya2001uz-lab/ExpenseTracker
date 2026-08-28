@@ -10,5 +10,8 @@ Content-Type: application/json
 
 {
   "amount": 250,
-  "category": "food"
+  "category": "lood"
 }
+
+###Удалить расход по индексу
+DELETE {{ExpenseTracker.Api_HostAddress}}/expenses/3
