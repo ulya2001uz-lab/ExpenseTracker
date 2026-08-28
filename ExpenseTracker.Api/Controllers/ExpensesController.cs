@@ -30,5 +30,18 @@ namespace ExpenseTracker.Api.Controllers
         {
             expenses.RemoveAll(x => x.Id == id);
         }
+
+        [HttpPut("{id}")]
+        public Expense Update([FromRoute] int id,[FromBody] Expense updated)          //метод для изменения расхода
+        {                                                                             //FromRoute/FromBody - указывают asp.net откуда брать параметры
+            Expense found = expenses.FirstOrDefault(expense => expense.Id == id);
+            if (found != null)
+            {
+                found.Amount = updated.Amount;
+                found.Category = updated.Category;
+                found.Date = DateTime.Now;
+            }
+            return found;
+        }
     }
 }
