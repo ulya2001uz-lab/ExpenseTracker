@@ -1,3 +1,5 @@
 <Solution>
+  <Project Path="ExpenseTracker.Api/ExpenseTracker.Api.csproj" Id="35c46cf8-c887-4ba1-9aab-8fddd0f4266c" />
+  <Project Path="ExpenseTracker.Core/ExpenseTracker.Core.csproj" Id="baf68106-ec3f-4448-a1d2-76064352a455" />
   <Project Path="ExpenseTracker/ExpenseTracker.csproj" />
 </Solution>

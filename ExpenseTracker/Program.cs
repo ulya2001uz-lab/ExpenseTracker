@@ -1,4 +1,4 @@
-﻿using ExpenseTracker;
+﻿using ExpenseTracker.Core;
 
 List<Expense> expenses = new();
 
