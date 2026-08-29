@@ -18,10 +18,10 @@ DELETE {{ExpenseTracker.Api_HostAddress}}/expenses/3
 
 
 ###Изменить данные определенного расхода
-PUT {{ExpenseTracker.Api_HostAddress}}/expenses/2
+PUT {{ExpenseTracker.Api_HostAddress}}/expenses/4
 Content-Type: application/json
 
 {
-  "amount": 100,
-  "category": "good"
+  "amount": 1000,
+  "category": "books"
 }
