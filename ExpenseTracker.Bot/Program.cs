@@ -1,0 +1,90 @@
+﻿using Telegram.Bot;
+using Telegram.Bot.Polling;
+using Telegram.Bot.Types;
+using Telegram.Bot.Types.Enums;
+
+using Microsoft.Extensions.Configuration;
+
+//читаем конфигурацию, включая User Secrets, чтобы не "палить" токен бота
+var configuration = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
+
+//достаем токен
+var tokenBot = configuration["BotToken"];
+
+var botClient = new TelegramBotClient(tokenBot);      //пульт управления моим ботом
+
+using CancellationTokenSource cts = new();      //остановка бота, когда программа завершается, "выключатель"
+
+var receiverOptions = new ReceiverOptions       //настройка "прослушки": что именно слушать
+{
+    AllowedUpdates = Array.Empty<UpdateType>()  //слушаем ВСЕ типы событий по умолчанию
+};
+
+//"прослушка" для бота, проверка на новые сообщения в ТГ
+botClient.StartReceiving(                   //включаем "прослушку", чтобы ловить сообщения
+    updateHandler: HandleUpdateAsync,       //когда придет сообщение будет вызван метод HandleUpdateAsync
+    errorHandler: HandleErrorAsync,         //если будет ошибка, будет вызван метод HandleErrorAsync
+    receiverOptions: receiverOptions,
+    cancellationToken: cts.Token
+);
+
+var me = await botClient.GetMe();
+Console.WriteLine($"Бот @{me.Username} запущен! Нажмите Enter для остановки.");
+Console.ReadLine();     //без этой строки программа просто закроется, а пока программа "висит", бот в фоне слушает и отвечает
+cts.Cancel();
+
+//обработчик входящих сообщений
+async Task HandleUpdateAsync(ITelegramBotClient bot, Update update, CancellationToken token)
+{
+    ///проверка, что пришло именно сообщение
+    if (update.Message is not { } message)
+        return;
+
+    //проверка, что в сообщении есть текст
+    if (message.Text is not { } messageText)
+        return;
+
+    Console.WriteLine($"Получено сообщение: {messageText}");
+
+    //разрезаем сообщение по пробелу
+    string[] parts = messageText.Split(' ');
+
+    //проверяем, что частей ровно 2 (категория и сумма)
+    if (parts.Length != 2)
+    {
+        await bot.SendMessage(
+            chatId: message.Chat.Id,
+            text: "Напиши в формате: категория сумма (например: кофе 500)",
+            cancellationToken: token
+        );
+        return;
+    }
+
+    string category = parts[0];           //первая часть - категория
+    string amountText = parts[1];         //вторая часть - сумма (пока текст)
+
+    //пробуем превратить сумму в число
+    if (!decimal.TryParse(amountText, out decimal amount))
+    {
+        await bot.SendMessage(
+            chatId: message.Chat.Id,
+            text: "Сумма должна быть числом. Например: кофе 500",
+            cancellationToken: token
+        );
+        return;
+    }
+
+    //пока просто подтверждаем, что разобрали
+    await bot.SendMessage(
+        chatId: message.Chat.Id,
+        text: $"Разобрал: категория = {category}, сумма = {amount}",
+        cancellationToken: token
+    );
+}
+
+//обработчик ошибок
+Task HandleErrorAsync(ITelegramBotClient bot, Exception exception, CancellationToken token)
+{
+    Console.WriteLine($"Ошибка: {exception.Message}");
+    return Task.CompletedTask;
+}
