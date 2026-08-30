@@ -44,7 +44,7 @@ void AddExpense(List<Expense> expenses)
     string categoryExpenses = Console.ReadLine();
     object1.Amount = newAmount;
     object1.Category = categoryExpenses;
-    object1.Date = DateTime.Now;
+    object1.Date = DateOnly.FromDateTime(DateTime.Now);
     expenses.Add(object1);
 }
 

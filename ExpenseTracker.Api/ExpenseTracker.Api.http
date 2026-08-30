@@ -9,19 +9,19 @@ POST {{ExpenseTracker.Api_HostAddress}}/expenses
 Content-Type: application/json
 
 {
-  "amount": 250,
-  "category": "food"
+  "amount": 20,
+  "category": "good"
 }
 
 ###Удалить расход по индексу
-DELETE {{ExpenseTracker.Api_HostAddress}}/expenses/3
+DELETE {{ExpenseTracker.Api_HostAddress}}/expenses/1
 
 
 ###Изменить данные определенного расхода
-PUT {{ExpenseTracker.Api_HostAddress}}/expenses/4
+PUT {{ExpenseTracker.Api_HostAddress}}/expenses/2
 Content-Type: application/json
 
 {
-  "amount": 1000,
-  "category": "books"
+  "amount": 10,
+  "category": "chips"
 }
