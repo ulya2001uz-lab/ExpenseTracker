@@ -5,12 +5,16 @@ using Telegram.Bot.Types.Enums;
 
 using Microsoft.Extensions.Configuration;
 
+using System.Net.Http.Json;
+
+
 //читаем конфигурацию, включая User Secrets, чтобы не "палить" токен бота
 var configuration = new ConfigurationBuilder().AddUserSecrets<Program>().Build();
 
 //достаем токен
 var tokenBot = configuration["BotToken"];
 
+var httpClient = new HttpClient();                    //для отправки запросов к API, "почтальон"
 var botClient = new TelegramBotClient(tokenBot);      //пульт управления моим ботом
 
 using CancellationTokenSource cts = new();      //остановка бота, когда программа завершается, "выключатель"
@@ -74,12 +78,44 @@ async Task HandleUpdateAsync(ITelegramBotClient bot, Update update, Cancellation
         return;
     }
 
-    //пока просто подтверждаем, что разобрали
-    await bot.SendMessage(
-        chatId: message.Chat.Id,
-        text: $"Разобрал: категория = {category}, сумма = {amount}",
-        cancellationToken: token
-    );
+    //собираем данные расхода для отправки
+    var newExpense = new
+    {
+        amount = amount,
+        category = category
+    };
+
+    try
+    {       
+        //ответ от API, полученный после того, как наш "почтальон" превратил объект в данные JSON,
+        //где есть два аргумента: куда и что отправить (адрес и объект)
+        var response = await httpClient.PostAsJsonAsync("http://localhost:5176/expenses", newExpense);
+
+        if (response.IsSuccessStatusCode)
+        {
+            await bot.SendMessage(
+                chatId: message.Chat.Id,
+                text: $"Записал: {category} - {amount}",
+                cancellationToken: token
+                );
+        }
+        else
+        {
+            await bot.SendMessage(
+                chatId: message.Chat.Id,
+                text: "Не удалось сохранить расход! Попробуйте позже.",
+                cancellationToken: token
+                );
+        }
+    }
+    catch
+    {
+        await bot.SendMessage(
+            chatId: message.Chat.Id,
+            text: "Ошибка связи с сервером. Проверьте, запущен ли API!",
+            cancellationToken: token
+            );
+    }
 }
 
 //обработчик ошибок
