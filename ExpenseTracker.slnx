@@ -1,4 +1,7 @@
 <Solution>
+  <Folder Name="/Элементы решения/">
+    <File Path="README.md" />
+  </Folder>
   <Project Path="ExpenseTracker.Api/ExpenseTracker.Api.csproj" Id="35c46cf8-c887-4ba1-9aab-8fddd0f4266c" />
   <Project Path="ExpenseTracker.Bot/ExpenseTracker.Bot.csproj" Id="f05eb3da-b1cc-4065-ac96-ad8f14b07245" />
   <Project Path="ExpenseTracker.Core/ExpenseTracker.Core.csproj" Id="baf68106-ec3f-4448-a1d2-76064352a455" />
